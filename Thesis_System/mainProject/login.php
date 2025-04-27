@@ -3,7 +3,7 @@ session_start();
 include 'db.php';
 
 $error = "";
-$successScript = ""; // Will hold the JS if login is successful
+$successScript = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST["email"];
@@ -15,12 +15,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $users = $stmt->get_result()->fetch_assoc();
 
     if ($users && password_verify($password, $users['password'])) {
-        $_SESSION['user'] = $users['username']; // Save username to session
+        $_SESSION['user'] = $users['username'];
 
-        // Instead of header(), show a JS alert and redirect
+        // Alert and redirect after OK
         $successScript = "<script>
-            alert('Login successful! Redirecting to dashboard...');
-            window.location.href = 'dashboard.php';
+            window.onload = function() {
+                alert('Login successful!');
+                window.location.href = 'dashboard.php';
+            }
         </script>";
     } else {
         $error = "Invalid email or password!";
@@ -39,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="navbar">
         <div class="logo">Pancreatic<span style="color:#000;">Cancer</span></div>
         <div class="nav-links">
-            <a class="" href="index.php">Home</a>
+            <a href="index.php">Home</a>
             <a href="login.php">Login</a>
         </div>
     </div>
@@ -59,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
     </div>
 
-    <!-- Inject success JS if login was correct -->
+    <!-- Success alert and redirect -->
     <?= $successScript ?>
 </body>
 </html>
